@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Happy Birthday Budo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,400;1,9..144,600&family=DM+Sans:wght@400;500&family=Pacifico&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#5a3354; --rose:#ff7fa5; --deep:#e0557f; --peach:#ffc9a8; --lav:#c9b6ff; --cream:#fffaf6;
+  --serif:'Fraunces',Georgia,serif; --script:'Pacifico','Brush Script MT',cursive; --sans:'DM Sans',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:radial-gradient(circle at 15% 0%,#ffe3d2 0,transparent 55%),radial-gradient(circle at 90% 100%,#e4d9ff 0,transparent 55%),linear-gradient(160deg,#fff1f5,#fffaf6 50%,#fdeaff);
+  color:var(--ink);font-family:var(--sans);overflow:hidden;
+  padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+}
+.screen{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:24px;opacity:0;visibility:hidden;transition:opacity .9s ease,visibility .9s}
+.screen.active{opacity:1;visibility:visible}
+h1,h2{font-family:var(--serif);font-weight:600}
+.btn{margin-top:32px;border:0;border-radius:999px;padding:16px 36px;font:500 1.05rem var(--sans);
+  background:linear-gradient(120deg,var(--rose),var(--peach));color:#fff;box-shadow:0 8px 20px rgba(255,127,165,.35);cursor:pointer;transition:transform .2s}
+.btn:active{transform:scale(.95)}
+.btn.ghost{background:#fff;color:var(--deep);border:2px solid #ffd0de;box-shadow:0 6px 16px rgba(224,85,127,.15)}
+#intro .btn{width:min(80vw,300px)}
+#intro .btn + .btn{margin-top:14px}
+.skip{display:block;margin:4px auto 0;background:none;border:0;color:var(--ink);opacity:.6;
+  font:500 .9rem var(--sans);padding:10px 14px;cursor:pointer;text-decoration:underline}
+.btn:focus-visible{outline:3px solid var(--lav);outline-offset:3px}
+
+/* intro */
+#intro h1{font-size:clamp(2rem,9vw,3.4rem);font-style:italic;font-weight:400;line-height:1.2}
+#intro p{margin-top:14px;opacity:.75;max-width:28ch}
+.heart{font-size:3.2rem;animation:beat 1.4s infinite}
+@keyframes beat{0%,100%{transform:scale(1)}15%{transform:scale(1.2)}30%{transform:scale(1)}45%{transform:scale(1.15)}}
+
+/* memory lane */
+#lane{justify-content:flex-start;overflow-y:auto;padding-top:calc(env(safe-area-inset-top) + 54px);padding-bottom:calc(env(safe-area-inset-bottom) + 24px)}
+#lane .title{position:absolute;top:calc(env(safe-area-inset-top) + 22px);font-family:var(--serif);font-style:italic;font-size:1.1rem;color:var(--deep)}
+.polaroid{
+  width:min(62vw,260px);background:#fff;padding:12px 12px 18px;border-radius:4px;
+  box-shadow:0 18px 40px rgba(224,85,127,.25);color:var(--ink);
+  transform:translateY(-120%) rotate(-8deg);opacity:0;
+}
+.polaroid.in{animation:drop .9s cubic-bezier(.2,.9,.3,1.2) forwards}
+.polaroid.out{animation:away .6s ease-in forwards}
+@keyframes drop{to{transform:translateY(0) rotate(var(--tilt,-3deg));opacity:1}}
+@keyframes away{from{transform:translateY(0) rotate(var(--tilt,-3deg));opacity:1}to{transform:translateX(120%) rotate(14deg);opacity:0}}
+.photo{width:100%;aspect-ratio:1/1;border-radius:2px;background:linear-gradient(135deg,var(--peach),var(--lav));
+  display:flex;align-items:center;justify-content:center;font-size:3rem;overflow:hidden}
+.photo img{width:100%;height:100%;object-fit:cover;display:block}
+.cap{font-family:var(--serif);font-style:italic;font-size:1.15rem;margin-top:14px;line-height:1.35}
+.yr{font-size:.85rem;opacity:.6;margin-top:4px}
+.dots{display:flex;gap:8px;margin-top:20px;padding-bottom:6px}
+.dots i{width:8px;height:8px;border-radius:50%;background:var(--ink);opacity:.2;transition:.3s}
+.dots i.on{opacity:1;background:var(--deep);transform:scale(1.3)}
+.quiz{width:min(88vw,340px);margin-top:18px;opacity:0;transition:opacity .5s;text-align:left}
+.quiz.on{opacity:1}
+.quiz label,.q-label{display:block;font-size:.85rem;opacity:.75;margin:0 0 6px 4px}
+.yearbox{width:100%;padding:12px 14px;border-radius:14px;border:2px solid #f6d6e2;background:#fff;
+  font:500 1.1rem var(--sans);color:var(--ink);text-align:center;margin-bottom:14px}
+.yearbox:focus{outline:none;border-color:var(--rose)}
+.opts{display:grid;gap:10px}
+.opt{width:100%;padding:13px 14px;border-radius:14px;border:2px solid #f6d6e2;background:#fff;color:var(--ink);
+  font:500 1rem var(--sans);cursor:pointer;transition:.2s;text-align:center}
+.opt.sel{border-color:var(--deep);background:#fff0f5}
+.opt.right{border-color:#6cc18a;background:#eafaf0}
+.opt.wrong{border-color:#f08a8a;background:#fff0f0}
+.quiz .btn{width:100%;margin-top:16px;padding:14px}
+.msg{min-height:1.5em;margin-top:12px;font-size:.95rem;text-align:center}
+.msg.ok{color:#2f9a5c;font-weight:500}
+.shake{animation:shake .4s}
+@keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+
+/* result */
+#result .big{font-size:4rem}
+#result .score{font-family:var(--script);font-size:2.6rem;color:var(--deep);margin:6px 0 10px}
+#result h2{font-size:clamp(1.4rem,6vw,1.9rem);line-height:1.35;max-width:20ch;font-style:italic}
+#result p{margin-top:14px;max-width:30ch;line-height:1.6;opacity:.85}
+/* finale */
+#finale{overflow-y:auto;justify-content:flex-start;padding-top:12vh}
+.hb{font-size:clamp(1rem,5vw,1.4rem);letter-spacing:.18em;color:var(--deep)}
+.name{font-family:var(--script);font-weight:400;font-size:clamp(4rem,24vw,8rem);line-height:1.5;padding:0 .15em;margin:0 0 4px;
+  background:linear-gradient(120deg,var(--deep),var(--lav),var(--rose),var(--peach),var(--deep));background-size:200% auto;
+  -webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 4s linear infinite}
+@keyframes shine{to{background-position:200% center}}
+.final-photo{width:min(70vw,300px);background:#fff;padding:12px;border-radius:6px;margin-top:10px;
+  box-shadow:0 18px 40px rgba(224,85,127,.28);transform:rotate(2deg) scale(.9);opacity:0;transition:all 1.2s cubic-bezier(.2,.9,.3,1.2)}
+.final-photo.show{opacity:1;transform:rotate(2deg) scale(1)}
+.wish{max-width:32ch;margin:26px auto 0;font-family:var(--serif);font-style:italic;font-size:1.2rem;line-height:1.7}
+.wish p{opacity:0;transform:translateY(10px);transition:all 1s ease;margin-bottom:14px}
+.wish p.show{opacity:1;transform:none}
+.wish .r{visibility:hidden}
+.wish p.typing .t::after{content:'';display:inline-block;width:2px;height:1em;background:var(--deep);
+  margin-left:2px;vertical-align:-.15em;animation:blink .8s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.sign{margin:10px 0 40px;opacity:0;transition:opacity 1.5s}
+.sign.show{opacity:1}
+canvas{position:fixed;inset:0;pointer-events:none;z-index:5}
+@media (prefers-reduced-motion:reduce){.heart,.name{animation:none}.polaroid.in{animation-duration:.01s}}
+/* journey: infinity of achievements */
+#journey{overflow-y:auto;padding:calc(env(safe-area-inset-top) + 20px) 12px calc(env(safe-area-inset-bottom) + 20px)}
+.jwrap{width:min(100%,420px);margin:auto}
+.jtitle{font-family:var(--script);font-weight:400;font-size:1.8rem;color:var(--deep);margin-bottom:6px}
+.stage{position:relative;width:100%}
+.stage svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+#roadDone.glow{stroke-width:8;animation:roadglow 1.8s ease-in-out infinite}
+@keyframes roadglow{0%,100%{filter:drop-shadow(0 0 3px rgba(255,127,165,.6))}50%{filter:drop-shadow(0 0 12px rgba(255,127,165,1))}}
+.node{position:absolute;width:46px;height:46px;border-radius:50%;border:3px solid #fff;overflow:hidden;
+  background:linear-gradient(135deg,var(--peach),var(--lav));box-shadow:0 6px 14px rgba(224,85,127,.35);
+  display:flex;align-items:center;justify-content:center;font-size:1.2rem;
+  transform:translate(-50%,-50%) scale(.2);opacity:0;transition:transform .7s cubic-bezier(.2,1.4,.4,1),opacity .4s}
+.node img{width:100%;height:100%;object-fit:cover;display:block}
+.node.on{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.node.cur{transform:translate(-50%,-50%) scale(1.45);z-index:2;animation:ring 1.6s ease-out 2}
+@keyframes ring{0%{box-shadow:0 0 0 0 rgba(255,127,165,.7)}100%{box-shadow:0 0 0 18px rgba(255,127,165,0)}}
+.panel{position:relative;min-height:310px;margin-top:10px}
+.spot,.finalbox{position:absolute;left:0;right:0;top:0;opacity:0;pointer-events:none;transition:opacity .5s}
+.spot.on,.finalbox.on{opacity:1}
+.finalbox.on{pointer-events:auto}
+.snum{font-size:.75rem;letter-spacing:.2em;color:var(--deep);font-weight:500}
+.spic{width:124px;height:124px;border-radius:50%;border:5px solid #fff;margin:12px auto;overflow:hidden;
+  box-shadow:0 14px 30px rgba(224,85,127,.35);background:linear-gradient(135deg,var(--peach),var(--lav));
+  display:flex;align-items:center;justify-content:center;font-size:3rem}
+.spic img{width:100%;height:100%;object-fit:cover;display:block}
+.stitle{font-family:var(--serif);font-style:italic;font-weight:600;font-size:1.35rem;line-height:1.25}
+.snote{margin:8px auto 0;max-width:28ch;font-size:.92rem;line-height:1.5;opacity:.8}
+.spot.in .spic{animation:pop .7s cubic-bezier(.2,1.4,.4,1)}
+.spot.in .snum,.spot.in .stitle,.spot.in .snote{animation:fadeup .7s both}
+.spot.in .stitle{animation-delay:.2s}.spot.in .snote{animation-delay:.4s}
+@keyframes pop{from{transform:scale(.3);opacity:0}to{transform:none;opacity:1}}
+@keyframes fadeup{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.inf{font-size:5.5rem;line-height:1.1;font-family:var(--serif);background:linear-gradient(120deg,var(--deep),var(--lav),var(--rose));
+  -webkit-background-clip:text;background-clip:text;color:transparent;animation:infglow 2s ease-in-out infinite}
+@keyframes infglow{0%,100%{filter:drop-shadow(0 0 6px rgba(255,127,165,.5))}50%{filter:drop-shadow(0 0 18px rgba(255,127,165,1))}}
+.finalbox h3{font-family:var(--serif);font-style:italic;font-weight:600;font-size:1.5rem;margin-top:4px}
+.finalbox .lim{font-family:var(--script);font-size:1.6rem;color:var(--deep);margin-top:8px}
+.finalbox .btn{margin-top:22px}
+</style>
+</head>
+<body>
+
+<!-- 1. INTRO -->
+<section class="screen active" id="intro">
+  <div class="heart">💗</div>
+  <h1>Before the cake,<br>a little walk down memory lane</h1>
+  <p>7 years of us. Want to test how much you remember? 😉</p>
+  <button class="btn" id="startBtn">Play the quiz 🎮</button>
+  <button class="btn ghost" id="photosBtn">Just show the photos 📸</button>
+</section>
+
+<!-- 2. MEMORY LANE -->
+<section class="screen" id="lane">
+  <div class="title">Our 7 years</div>
+  <div class="polaroid" id="card">
+    <div class="photo" id="photo"></div>
+    <div class="cap" id="cap"></div>
+    <div class="yr" id="yr"></div>
+  </div>
+  <div class="quiz" id="quiz">
+    <label for="yearIn">Which year was this?</label>
+    <input class="yearbox" id="yearIn" type="text" inputmode="numeric" maxlength="4" placeholder="e.g. 2021" autocomplete="off">
+    <div class="q-label">What was the moment?</div>
+    <div class="opts" id="opts"></div>
+    <button class="btn" id="checkBtn" type="button">Check ✨</button>
+    <div class="msg" id="msg" role="status"></div>
+    <button class="skip" id="skipBtn" type="button">Skip this one →</button>
+  </div>
+  <div class="dots" id="dots"></div>
+</section>
+
+<!-- 2b. QUIZ RESULT -->
+<section class="screen" id="result">
+  <div class="big" id="resEmoji"></div>
+  <div class="score" id="resScore"></div>
+  <h2 id="resTitle"></h2>
+  <p id="resText"></p>
+  <button class="btn" id="resBtn">Continue 💗</button>
+</section>
+
+<!-- 2c. JOURNEY: INFINITY OF ACHIEVEMENTS -->
+<section class="screen" id="journey">
+  <div class="jwrap">
+    <h2 class="jtitle">Your journey of wins 🏆</h2>
+    <div class="stage" id="stage">
+      <svg id="road" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+        <defs><linearGradient id="jg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff7fa5"/><stop offset=".5" stop-color="#c9b6ff"/><stop offset="1" stop-color="#ff7fa5"/></linearGradient></defs>
+        <path id="roadBase" fill="none" stroke="#f3cfe0" stroke-width="5" stroke-linecap="round" stroke-dasharray="1 10"/>
+        <path id="roadDone" fill="none" stroke="url(#jg)" stroke-width="5" stroke-linecap="round"/>
+        <g id="stopDots"></g>
+        <g id="traveler"><circle r="14" fill="rgba(255,127,165,.28)"/><circle r="7" fill="#e0557f" stroke="#fff" stroke-width="2.5"/></g>
+      </svg>
+    </div>
+    <div class="panel">
+      <div class="spot" id="spot">
+        <div class="snum" id="sNum"></div>
+        <div class="spic" id="sPic"></div>
+        <div class="stitle" id="sTitle"></div>
+        <div class="snote" id="sNote"></div>
+      </div>
+      <div class="finalbox" id="finalBox">
+        <div class="inf">∞</div>
+        <h3>This is not over yet…</h3>
+        <div class="lim">Infinity is the limit.</div>
+        <button class="btn" id="jBtn" type="button">Continue 💗</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3. FINALE -->
+<section class="screen" id="finale">
+  <div class="hb">💗HAPPY BIRTHDAY💗</div>
+  <div class="name">💗BUDO💗</div>
+  <div class="final-photo" id="finalPhotoBox"><div class="photo" id="finalPhoto">💗</div></div>
+  <div class="wish" id="wish">
+    <!-- ✏️ EDIT YOUR BIRTHDAY WISH LINES HERE -->
+    <p>Seven years, and you still make every ordinary day feel like a celebration.</p>
+    <p>Thank you for your laughter, your patience, and for being my safest place.</p>
+    <p>May this year bring you everything you give so freely to others.</p>
+    <p>I love you, today and always.</p>
+  </div>
+  <div class="sign" id="sign">
+    <p style="font-family:var(--serif);font-size:clamp(1.35rem,6.2vw,1.9rem);font-weight:700;line-height:1.4;letter-spacing:.02em;margin:18px 0;
+  background:linear-gradient(120deg,#e0557f,#c9b6ff,#ff7fa5,#ffc9a8,#e0557f);background-size:200% auto;
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:shine 4s linear infinite, infglow 2s ease-in-out infinite;">
+  <span style="display:inline-block;animation:twinkle 1.4s ease-in-out infinite">✨</span><span style="display:inline-block;animation:twinkle 1.4s ease-in-out .5s infinite">💗</span>
+  EBHABEI GOLPO HOK ......... AMADER RUPKOTHAR
+  <span style="display:inline-block;animation:twinkle 1.4s ease-in-out .9s infinite">💗</span><span style="display:inline-block;animation:twinkle 1.4s ease-in-out 1.3s infinite">✨</span>
+</p>
+    Forever yours 💗</div>
+  <button class="btn" id="replay" style="margin-top:0">Watch again</button>
+</section>
+
+<canvas id="fx"></canvas>
+<audio id="music" src="ebhabei golpo hok.mp3" loop preload="auto"></audio>
+
+<script>
+/* ✏️ ADD YOUR PHOTOS + QUIZ HERE
+   1. Put photos in a folder called "photos" next to this file.
+   2. One entry per memory:
+        src         = photo path
+        year        = the correct year she must guess
+        rightAnswer = the correct event (also shown as the caption after she gets it right)
+        wrongAnswer = the wrong option shown next to it
+   The two options appear in random order. She moves on only when BOTH year and event are right. */
+const memories = [
+  { src: "photos/photo1.jpg", year: "2021", rightAnswer: "We passed higher secondary together", wrongAnswer: "A random school day" },
+  { src: "photos/photo2.jpg", year: "2021", rightAnswer: "Returning after pandal hopping",    wrongAnswer: "Returning from a lunch date" },
+  { src: "photos/photo3.jpg", year: "2022", rightAnswer: "It was my birthday", wrongAnswer: "It was your birthday" },
+  { src: "photos/photo4.jpg", year: "2023", rightAnswer: "It was a lunch with Suvo - Trishita", wrongAnswer: "It was a lunch with Tanaya - Avisekh Da" },
+  { src: "photos/photo5.jpg", year: "2023", rightAnswer: "Photographer was Arko da", wrongAnswer: "Photographer was Avisekh Da" },
+  { src: "photos/photo6.jpg", year: "2023", rightAnswer: "The restaurant was Koshe kosha",        wrongAnswer: "The restaurant was Kasturi" },
+  { src: "photos/photo7.jpg", year: "2024", rightAnswer: "The place is Deshapriya Park",   wrongAnswer: "The place is Tridhara" },
+  { src: "photos/photo8.jpg", year: "2023", rightAnswer: "We went separately for pandal hopping",   wrongAnswer: "We went together for pandal hopping" },
+  { src: "photos/photo9.jpg", year: "2025", rightAnswer: "Blue & Beyond",   wrongAnswer: "Glook The Sky Lounge" }
+];
+
+/* ✏️ PHOTO FOR THE LAST PAGE (shown under BUDO, above the wishes) */
+const finalPhotoSrc = "Photos/Final.jpeg";
+
+const $ = id => document.getElementById(id);
+
+/* Fit the frame to the photo's own shape (portrait, landscape or square).
+   maxW / maxH keep very tall or very wide photos from overflowing the phone screen. */
+function fitFrame(frame, box, img, maxW, maxH){
+  const w = Math.min(maxW, maxH * img.naturalWidth / img.naturalHeight);
+  frame.style.width = (w + 24) + 'px';                         // +24 = frame padding
+  box.style.aspectRatio = img.naturalWidth + ' / ' + img.naturalHeight;
+}
+const show = id => { document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id === id)); };
+let idx = 0, selected = null, locked = false, advancing = false, quizMode = true, timer = null, score = 0, missed = false;
+
+$('dots').innerHTML = memories.map(() => '<i></i>').join('');
+
+function say(text, cls){ const m = $('msg'); m.textContent = text; m.className = 'msg ' + (cls || ''); }
+
+function showMemory(i){
+  const m = memories[i], card = $('card'), quiz = $('quiz');
+  clearTimeout(timer); advancing = false; missed = false;
+  locked = false; selected = null;
+  card.className = 'polaroid'; quiz.className = 'quiz';
+  void card.offsetWidth;
+  card.style.setProperty('--tilt', (i % 2 ? 3 : -3) + 'deg');
+
+  const ph = $('photo');
+  ph.textContent = '💗';                       // placeholder if photo missing
+  card.style.width = ''; ph.style.aspectRatio = '';
+  const img = new Image();
+  img.alt = 'Our memory';
+  img.onload = () => {
+    ph.textContent = ''; ph.appendChild(img);
+    fitFrame(card, ph, img, Math.min(innerWidth * .8, 340), innerHeight * .34);
+  };
+  img.src = m.src;
+
+  $('cap').textContent = 'Do you remember this day? 🤔';
+  $('yr').textContent = '';
+  $('yearIn').value = '';
+  say('');
+
+  const box = $('opts'); box.innerHTML = '';
+  [m.rightAnswer, m.wrongAnswer].sort(() => Math.random() - .5).forEach(t => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'opt'; b.textContent = t;
+    b.onclick = () => {
+      if (locked) return;
+      selected = t;
+      [...box.children].forEach(x => { x.classList.remove('wrong'); x.classList.toggle('sel', x === b); });
+    };
+    box.appendChild(b);
+  });
+
+  [...$('dots').children].forEach((d, k) => d.classList.toggle('on', k === i));
+  card.classList.add('in');
+  if (quizMode) {
+    quiz.style.display = '';
+    setTimeout(() => quiz.classList.add('on'), 700);
+  } else {
+    // photos-only mode: no quiz, show the caption and move on by itself
+    quiz.style.display = 'none';
+    $('cap').textContent = m.rightAnswer;
+    $('yr').textContent = m.year;
+    timer = setTimeout(advance, 4500);
+  }
+  $('lane').scrollTop = 0;
+}
+
+function check(){
+  if (locked) return;
+  const m = memories[idx];
+  const y = $('yearIn').value.trim();
+  if (!y || selected === null) { say('Choose the year and the moment first 😊'); return; }
+
+  const yearOk = y === String(m.year), eventOk = selected === m.rightAnswer;
+
+  if (yearOk && eventOk) {
+    locked = true;
+    if (!missed) score++;                 // counts only if right on the FIRST try
+    [...$('opts').children].forEach(b => b.classList.toggle('right', b.textContent === m.rightAnswer));
+    $('cap').textContent = m.rightAnswer;
+    $('yr').textContent = m.year;
+    say('Yes! You remembered 💗', 'ok');
+    timer = setTimeout(advance, 2600);
+    return;
+  }
+  // wrong -> gentle hint and try again
+  missed = true;
+  if (!eventOk) {
+    [...$('opts').children].forEach(b => { if (b.classList.contains('sel')) { b.classList.remove('sel'); b.classList.add('wrong'); } });
+    selected = null;
+  }
+  say(!yearOk && !eventOk ? 'Hmm, not quite. Think again 💭'
+      : yearOk ? 'Year is right! But the moment... 🤔'
+      : 'Moment is right! Check the year 🗓️');
+  const q = $('quiz'); q.classList.remove('shake'); void q.offsetWidth; q.classList.add('shake');
+}
+
+function advance(){
+  if (advancing) return;
+  advancing = true; clearTimeout(timer);
+  $('card').classList.replace('in', 'out');
+  $('quiz').classList.remove('on');
+  idx++;
+  setTimeout(() => idx >= memories.length ? (quizMode ? showResult() : startJourney()) : showMemory(idx), 650);
+}
+
+function startLane(){ idx = 0; score = 0; show('lane'); setTimeout(() => showMemory(0), 700); }
+
+/* ✏️ RESULT MESSAGES (edit the words as you like) */
+function showResult(){
+  const total = memories.length;
+  let emoji, title, text;
+  if (score === total) {
+    emoji = '🏆🎉';
+    title = 'WOW, fabulous! You remembered every moment of us!!!';
+    text = 'Not a single one forgotten. Okay, now I\'m scared of your memory. 😳💗';
+  } else if (score >= 4) {
+    emoji = '🧹😅';
+    title = 'It\'s been a long time, so a little bit of memory cleaning is fine…';
+    text = 'Seven years is a LOT of storage. Even the best phones need a restart sometimes. I\'ll let it slide. 😌';
+  } else {
+    emoji = '😤🎂';
+    title = 'Okay fine, it\'s your birthday…';
+    text = 'I can\'t start a new argument over this today. Your memory score is forgiven (for today only). We\'ll talk tomorrow. 😏';
+  }
+  $('resEmoji').textContent = emoji;
+  $('resScore').textContent = score + ' / ' + total;
+  $('resTitle').textContent = title;
+  $('resText').textContent = text;
+  show('result');
+}
+$('resBtn').onclick = startJourney;
+
+/* ✏️ ACHIEVEMENTS (shown along the infinity road, in this order).
+   src   = round photo (use different photos from the quiz, e.g. a "photos/achievements" folder)
+   emoji = shown if the photo is missing
+   title = the achievement,  note = a short motivating line */
+const achievements = [
+  { src: "photos/achievements/a1.jpg", emoji: "🎓", title: "Passed Higher Secondary",         note: "Where it all began. The first big step." },
+  { src: "photos/achievements/a2.jpg", emoji: "📚", title: "Got a chance in MMCC",            note: "Your hard work opened a brand new door." },
+  { src: "photos/achievements/a3.jpg", emoji: "🏛️", title: "Selected at Calcutta University", note: "Another dream unlocked, all by yourself." },
+  { src: "photos/achievements/a4.jpeg", emoji: "💼", title: "Job at Agarwal CA Firm",          note: "A short span, but your first taste of the real world." },
+  { src: "photos/achievements/a5.jpeg", emoji: "📈", title: "Two months at Suman CA Firm",     note: "More skills, more confidence, more you." },
+  { src: "photos/achievements/a6.jpeg", emoji: "🌟", title: "Selected for the KPMG ", note: "Your very first MNC. Look how far you've come!" }
+];
+const JOURNEY_SPEED = 110;         // road units per second - lower = slower
+const JOURNEY_PAUSE = 3200;        // milliseconds to stay on each achievement
+let journeyRun = 0;
+const sleep = ms => new Promise(res => setTimeout(res, ms));
+
+function setPhoto(box, it){          // round photo with emoji fallback
+  box.textContent = it.emoji || '💗';
+  const im = new Image(); im.alt = it.title;
+  im.onload = () => { box.textContent = ''; box.appendChild(im); };
+  im.src = it.src;
+}
+
+function startJourney(){
+  show('journey');
+  const run = ++journeyRun;
+  const stage = $('stage'), base = $('roadBase'), done = $('roadDone'), trav = $('traveler');
+  const spot = $('spot'), fin = $('finalBox'), n = achievements.length;
+  const W = 360, H = 140, A = 160, N = 900;
+
+  // draw the infinity sign (lemniscate), starting at its centre
+  const px = [], py = [], cum = [0];
+  for (let k = 0; k <= N; k++) {
+    const t = Math.PI / 2 + 2 * Math.PI * k / N, sn = Math.sin(t), cs = Math.cos(t), den = 1 + sn * sn;
+    px.push(W / 2 + A * cs / den); py.push(H / 2 + A * sn * cs / den);
+    if (k) cum.push(cum[k - 1] + Math.hypot(px[k] - px[k - 1], py[k] - py[k - 1]));
+  }
+  const total = cum[N];
+  const at = L => {
+    let lo = 0, hi = N;
+    while (hi - lo > 1) { const m = (lo + hi) >> 1; cum[m] <= L ? lo = m : hi = m; }
+    const f = (L - cum[lo]) / ((cum[hi] - cum[lo]) || 1);
+    return { x: px[lo] + (px[hi] - px[lo]) * f, y: py[lo] + (py[hi] - py[lo]) * f };
+  };
+  let d = 'M' + px[0].toFixed(1) + ' ' + py[0].toFixed(1);
+  for (let k = 1; k <= N; k++) d += ' L' + px[k].toFixed(1) + ' ' + py[k].toFixed(1);
+  $('road').setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+  stage.style.aspectRatio = W + ' / ' + H;
+  base.setAttribute('d', d); done.setAttribute('d', d);
+  done.style.strokeDasharray = total; done.style.strokeDashoffset = total;
+  done.classList.remove('glow');
+  trav.style.display = '';
+  spot.className = 'spot'; fin.className = 'finalbox';
+
+  // numbered dots + round photo nodes, spread evenly along the sign
+  stage.querySelectorAll('.node').forEach(e => e.remove());
+  $('stopDots').innerHTML = '';
+  const stopL = [], nodes = [];
+  achievements.forEach((it, i) => {
+    const L = total * (2 * i + 1) / (2 * n), p = at(L);
+    stopL.push(L);
+    const ns = 'http://www.w3.org/2000/svg';
+    const c = document.createElementNS(ns, 'circle');
+    c.setAttribute('cx', p.x); c.setAttribute('cy', p.y); c.setAttribute('r', 10);
+    c.setAttribute('fill', '#fff'); c.setAttribute('stroke', '#c9b6ff'); c.setAttribute('stroke-width', 2.5);
+    const tx = document.createElementNS(ns, 'text');
+    tx.setAttribute('x', p.x); tx.setAttribute('y', p.y + 3.5); tx.setAttribute('text-anchor', 'middle');
+    tx.setAttribute('font-size', 10); tx.setAttribute('fill', '#e0557f'); tx.textContent = i + 1;
+    $('stopDots').append(c, tx);
+    const nd = document.createElement('div');
+    nd.className = 'node';
+    nd.style.left = (p.x / W * 100) + '%'; nd.style.top = (p.y / H * 100) + '%';
+    setPhoto(nd, it);
+    stage.appendChild(nd);
+    nodes.push(nd);
+  });
+
+  const draw = L => {
+    const p = at(L);
+    done.style.strokeDashoffset = total - L;
+    trav.setAttribute('transform', 'translate(' + p.x + ' ' + p.y + ')');
+  };
+  draw(0);
+
+  const goTo = target => new Promise(res => {
+    let last = null;
+    const step = t => {
+      if (run !== journeyRun) return;
+      const dt = last === null ? 0 : Math.min(t - last, 50); last = t;
+      cur = Math.min(cur + JOURNEY_SPEED * dt / 1000, target);
+      draw(cur);
+      cur >= target ? res() : requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  });
+  let cur = 0;
+
+  (async () => {
+    await sleep(900);
+    for (let i = 0; i < n; i++) {
+      await goTo(stopL[i]);
+      if (run !== journeyRun) return;
+      nodes.forEach(x => x.classList.remove('cur'));
+      nodes[i].classList.add('on', 'cur');                 // stop + highlight this achievement
+      spot.classList.remove('in'); void spot.offsetWidth;
+      $('sNum').textContent = 'ACHIEVEMENT ' + (i + 1) + ' / ' + n;
+      setPhoto($('sPic'), achievements[i]);
+      $('sTitle').textContent = achievements[i].title;
+      $('sNote').textContent = achievements[i].note;
+      spot.classList.add('on', 'in');
+      await sleep(JOURNEY_PAUSE);
+      if (run !== journeyRun) return;
+    }
+    nodes.forEach(x => x.classList.remove('cur'));
+    spot.classList.remove('on');
+    await goTo(total);                                      // finish the full infinity loop
+    if (run !== journeyRun) return;
+    trav.style.display = 'none';
+    done.classList.add('glow');                             // the infinity sign lights up
+    await sleep(500);
+    fin.classList.add('on');
+  })();
+}
+$('jBtn').onclick = finale;
+
+
+
+
+/* very slow auto-scroll on the last page: follows the wishes as they appear and
+   stops at the end of the last wish line (not the very bottom). Touching the screen stops it. */
+const SCROLL_SPEED = 24;          // pixels per second - lower = slower
+let scrollRun = 0;
+function startAutoScroll(){
+  const box = $('finale'), run = ++scrollRun;
+  box.scrollTop = 0;
+  const stop = () => { if (run === scrollRun) scrollRun++; };
+  ['touchstart', 'wheel', 'mousedown'].forEach(ev => box.addEventListener(ev, stop, { once: true, passive: true }));
+  let pos = 0, prev = null;
+  const rel = el => el.getBoundingClientRect().bottom - box.getBoundingClientRect().top + box.scrollTop;
+  function frame(t){
+    if (run !== scrollRun) return;
+    const dt = prev === null ? 0 : Math.min(t - prev, 60); prev = t;
+    const ps = [...document.querySelectorAll('#wish p')];
+    const shown = ps.filter(p => p.classList.contains('show'));
+    const sign = $('sign'), signShown = sign.classList.contains('show');
+    const end = Math.min(rel(sign) + 40 - box.clientHeight, box.scrollHeight - box.clientHeight);   // end of the "Forever yours" block
+    if (shown.length) {
+      const lastEl = signShown ? sign : shown[shown.length - 1];
+      const seen = Math.min(rel(lastEl) + 40 - box.clientHeight, end);   // don't run ahead of the text
+      pos = Math.min(pos + SCROLL_SPEED * dt / 1000, Math.max(seen, pos));
+      box.scrollTop = pos;
+    }
+    if (signShown && pos >= end - 0.5) return;   // finished   // finished
+    requestAnimationFrame(frame);
+  }
+  setTimeout(() => { if (run === scrollRun) requestAnimationFrame(frame); }, 1500);
+}
+
+/* typewriter effect for the wish lines */
+const TYPE_SPEED = 55;            // milliseconds per letter - lower = faster
+let typeRun = 0;
+function typeWishes(ps){
+  const run = ++typeRun;
+  ps.forEach(p => {
+    if (!p.dataset.full) p.dataset.full = p.textContent.trim();
+    p.classList.remove('show', 'typing');
+    p.innerHTML = '<span class="t"></span><span class="r"></span>';   // .r holds the untyped rest (keeps the space reserved)
+    p.lastChild.textContent = p.dataset.full;
+  });
+  const wait = ms => new Promise(res => setTimeout(res, ms));
+  (async () => {
+    await wait(2200);
+    for (const p of ps) {
+      if (run !== typeRun) return;
+      const t = p.children[0], rest = p.children[1], full = p.dataset.full;
+      p.classList.add('show', 'typing');
+      for (let i = 1; i <= full.length; i++) {
+        if (run !== typeRun) return;
+        t.textContent = full.slice(0, i);
+        rest.textContent = full.slice(i);
+        await wait(/[.,!?]/.test(full[i - 1]) ? TYPE_SPEED * 4 : TYPE_SPEED);
+      }
+      p.classList.remove('typing');
+      await wait(700);
+    }
+    if (run === typeRun) $('sign').classList.add('show');
+  })();
+}
+
+function finale(){
+  show('finale');
+  const box = $('finalPhotoBox'), fp = $('finalPhoto');
+  box.classList.remove('show');
+  fp.textContent = '💗';
+  box.style.width = ''; fp.style.aspectRatio = '';
+  const fi = new Image();
+  fi.alt = 'Budo';
+  fi.onload = () => {
+    fp.textContent = ''; fp.appendChild(fi);
+    fitFrame(box, fp, fi, Math.min(innerWidth * .8, 340), innerHeight * .5);
+  };
+  fi.src = finalPhotoSrc;
+  setTimeout(() => box.classList.add('show'), 600);
+  const ps = [...document.querySelectorAll('#wish p')];
+  ps.forEach(p => p.classList.remove('show'));
+  $('sign').classList.remove('show');
+  typeWishes(ps);
+  confetti();
+  startAutoScroll();
+}
+
+function begin(withQuiz){
+  quizMode = withQuiz;
+  const a = $('music'); a.volume = .6; a.play().catch(() => {});   // plays only if music.mp3 exists
+  startLane();
+}
+$('startBtn').onclick = () => begin(true);
+$('photosBtn').onclick = () => begin(false);
+$('skipBtn').onclick = advance;                                      // skip the quiz for this photo
+$('lane').onclick = () => { if (!quizMode) advance(); };             // photos-only: tap to go faster
+$('checkBtn').onclick = check;
+$('yearIn').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); check(); } });
+$('replay').onclick = () => { scrollRun++; journeyRun++; typeRun++; stopFx(); show('intro'); };           // back to the start so she can choose again
+
+/* confetti + floating hearts */
+const cv = $('fx'), ctx = cv.getContext('2d');
+let bits = [], raf = null;
+function fit(){ cv.width = innerWidth * devicePixelRatio; cv.height = innerHeight * devicePixelRatio; }
+addEventListener('resize', fit); fit();
+function confetti(){
+  const colors = ['#ff7fa5','#ffc9a8','#c9b6ff','#ffb3c9'];
+  const burst = n => { for (let i = 0; i < n; i++) bits.push({
+    x: Math.random() * cv.width, y: -20 * devicePixelRatio,
+    vx: (Math.random() - .5) * 3, vy: 2 + Math.random() * 4,
+    s: (5 + Math.random() * 7) * devicePixelRatio, c: colors[i % 4],
+    r: Math.random() * 6, vr: (Math.random() - .5) * .3, heart: Math.random() < .25 }); };
+  burst(140);
+  const again = setInterval(() => burst(25), 700);
+  setTimeout(() => clearInterval(again), 6000);
+  if (!raf) loop();
+}
+function loop(){
+  ctx.clearRect(0, 0, cv.width, cv.height);
+  bits.forEach(b => {
+    b.x += b.vx; b.y += b.vy; b.r += b.vr;
+    ctx.save(); ctx.translate(b.x, b.y); ctx.rotate(b.r); ctx.fillStyle = b.c;
+    if (b.heart) { ctx.font = b.s * 2 + 'px serif'; ctx.fillText('♥', 0, 0); }
+    else ctx.fillRect(-b.s / 2, -b.s / 4, b.s, b.s / 2);
+    ctx.restore();
+  });
+  bits = bits.filter(b => b.y < cv.height + 30);
+  raf = bits.length ? requestAnimationFrame(loop) : null;
+  if (!raf) ctx.clearRect(0, 0, cv.width, cv.height);
+}
+function stopFx(){ bits = []; }
+</script>
+</body>
+</html>
