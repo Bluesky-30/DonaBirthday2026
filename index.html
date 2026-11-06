@@ -653,6 +653,20 @@ function loop(){
   if (!raf) ctx.clearRect(0, 0, cv.width, cv.height);
 }
 function stopFx(){ bits = []; }
+/* preload all images early (with retries) so they are cached before they are needed */
+function preloadAll(){
+  const urls = [...memories.map(m => m.src), ...achievements.map(a => a.src), finalPhotoSrc];
+  urls.forEach((u, i) => setTimeout(() => {
+    let tries = 0;
+    const load = () => {
+      const im = new Image();
+      im.onerror = () => { if (++tries < 3) setTimeout(load, 800 * tries); };
+      im.src = u;
+    };
+    load();
+  }, i * 150));            // small stagger so the first photos get priority
+}
+preloadAll();
 </script>
 </body>
 </html>
