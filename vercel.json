@@ -1,7 +1,7 @@
 {
   "headers": [
     {
-      "source": "/(.*)\\.(jpg|jpeg|png|webp|mp3)",
+      "source": "/(.*)\\.(jpg|jpeg|png|webp|mp3|JPG)",
       "headers": [{ "key": "Cache-Control", "value": "public, max-age=86400" }]
     }
   ]
